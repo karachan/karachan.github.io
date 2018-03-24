@@ -34,6 +34,23 @@
 
 <script type="text/javascript">
 
+String.prototype.shuffle = function () {
+    var a = this.split("\n"),
+        n = a.length;
+    var d = new Date(),
+        seed = 0+d.getFullYear()+d.getMonth()+d.getDate();
+
+    for(var i = n - 1; i > 0; i--) {
+        //var j = Math.floor(Math.random() * (i + 1));
+        var j = Math.floor(Math.abs(Math.sin(seed+i)) * (i + 1));
+        var tmp = a[i];
+        a[i] = a[j];
+        a[j] = tmp;
+    }
+    return a.join("\n");
+}
+
+
 function fragmentText(ctx,text, maxWidth) {
     var words = text.split(' '),
         lines = [],
@@ -70,8 +87,9 @@ function generuj_bingo() {
   
   var c = document.getElementById("bingoCanvas");
   var ctx = c.getContext("2d");
-  ctx.clearRect(0, 0, c.width, c.height);
-
+  ctx.clearRect(0, 0, c.width, c.height); //czysc (transparent)
+  ctx.rect(-10,-10,c.width+20,c.height+20); //czysc (bialy prostokat)
+  ctx.stroke(); 
 
   
   var bingo_w = 1500;
@@ -108,16 +126,32 @@ function generuj_bingo() {
   ctx.textBaseline="middle";
   ctx.fillText(document.getElementById("naglowek").value ,bingo_w/2,bingo_m/2,bingo_w);
 
+  //czasoznaczek
+  var d = new Date();
+  ctx.font="24px Arial";
+  //ctx.save();
+  //ctx.rotate(40, 0, 0);
+  ctx.fillStyle = "#f00";
+  ctx.fillText(d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate(), bingo_w/2, bingo_m-25);
+  ctx.fillStyle = "#000";
+  //ctx.restore();
+
+
 
 
   
   //teksty w kratkach
   var textAreaIn = document.getElementById("input_data");
-  var arrayOfLines = textAreaIn.value.split("\n");
+  var teksty = textAreaIn.value;
+  teksty = teksty.shuffle();
+  var arrayOfLines = teksty.split("\n");
+
 
   //trafiony czy nie
   var textAreaCh = document.getElementById("input_checked");
-  var arrayOfCh = textAreaCh.value.split("\n");
+  var textyCh = textAreaCh.value;
+  textyCh = textyCh.shuffle();
+  var arrayOfCh = textyCh.split("\n");
   
   
   var cell_w= bingo_w/5;
@@ -131,7 +165,6 @@ function generuj_bingo() {
 
   for(var x=0;x<5;x++){
     for (var y=0;y<5;y++) {
-      //ctx.fillText(arrayOfLines[z],  cell_w*(x)+cell_l,  cell_h*(y)+cell_t+bingo_m  ,cell_w);
       ctx.strokeStyle="#000000";
 
 
@@ -252,7 +285,7 @@ function set_wlasne() {
 </textarea> 
 
 <br><br>
-<button type="button" class="button" onclick="generuj_bingo();">Generuj</button> <br><br>
+<button type="button" class="button" onclick="generuj_bingo();generuj_bingo();">Generuj</button> <br><br>
 
 
 <canvas id="bingoCanvas" width="1500" height="1300" style="border:1px solid #d3d3d3;">Twoja przeglądarka nie umie into HTML5 canvas tag.</canvas>
