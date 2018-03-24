@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <title>Bingo generator</title>
+  <link rel="stylesheet" href="style.css">
+  <style type="text/css">
+    body {
+      font-family: Helvetica, 'Open Sans',sans-serif;
+     }
+    .rounded {
+      border-radius: 3px;
+    }
+    .button {
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      padding: 15px 25px;
+      text-align: center;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .button:hover {
+      background: green;
+    }
+
+    .waski {
+      padding-top:3px;
+      padding-bottom:3px;
+      margin: 5px;
+    }
+  </style>
+
+<script type="text/javascript">
+
+function fragmentText(ctx,text, maxWidth) {
+    var words = text.split(' '),
+        lines = [],
+        line = "";
+    if (ctx.measureText(text).width < maxWidth) {
+        return [text];
+    }
+    while (words.length > 0) {
+        while (ctx.measureText(words[0]).width >= maxWidth) {
+            var tmp = words[0];
+            words[0] = tmp.slice(0, -1);
+            if (words.length > 1) {
+                words[1] = tmp.slice(-1) + words[1];
+            } else {
+                words.push(tmp.slice(-1));
+            }
+        }
+        if (ctx.measureText(line + words[0]).width < maxWidth) {
+            line += words.shift() + " ";
+        } else {
+            lines.push(line);
+            line = "";
+        }
+        if (words.length === 0) {
+            lines.push(line);
+        }
+    }
+    return lines;
+}
+
+
+
+function generuj_bingo() {
+  
+  var c = document.getElementById("bingoCanvas");
+  var ctx = c.getContext("2d");
+  ctx.clearRect(0, 0, c.width, c.height);
+
+
+  
+  var bingo_w = 1500;
+  var bingo_h = 1100;
+  var bingo_m = 200;  //miejsce na naglowek
+  var line_w  = 4;
+
+  ctx.lineWidth=line_w;
+
+  //linie pionowe
+  for (var x=1;x<5;x++) {
+    ctx.beginPath();
+    ctx.moveTo(x*(bingo_w/5), 0       +bingo_m);
+    ctx.lineTo(x*(bingo_w/5), bingo_h +bingo_m);  
+    ctx.stroke();
+  }
+
+  //linie poziome
+  for (var y=1;y<5;y++) {
+    ctx.beginPath();
+    ctx.moveTo(0      , y*(bingo_h/5) +bingo_m);
+    ctx.lineTo(bingo_w, y*(bingo_h/5) +bingo_m);  
+    ctx.stroke();
+  }
+  
+  //ramka
+  ctx.rect(0+(line_w/2) ,  0+(line_w/2)+bingo_m,  bingo_w-line_w,  bingo_h-line_w);
+  ctx.stroke();
+
+
+  //Tekst na nagłówku
+  ctx.font="120px Arial";
+  ctx.textAlign="center";
+  ctx.textBaseline="middle";
+  ctx.fillText(document.getElementById("naglowek").value ,bingo_w/2,bingo_m/2,bingo_w);
+
+
+
+  
+  //teksty w kratkach
+  var textAreaIn = document.getElementById("input_data");
+  var arrayOfLines = textAreaIn.value.split("\n");
+
+  //trafiony czy nie
+  var textAreaCh = document.getElementById("input_checked");
+  var arrayOfCh = textAreaCh.value.split("\n");
+  
+  
+  var cell_w= bingo_w/5;
+  var cell_h= bingo_h/5;
+  var cell_l= bingo_w/5/2;
+  var cell_t= bingo_h/5/2;
+  var z=0;
+
+  ctx.font="40px Arial";
+  var font_size = 40;
+
+  for(var x=0;x<5;x++){
+    for (var y=0;y<5;y++) {
+      //ctx.fillText(arrayOfLines[z],  cell_w*(x)+cell_l,  cell_h*(y)+cell_t+bingo_m  ,cell_w);
+      ctx.strokeStyle="#000000";
+
+
+      var trafony = 0;
+      if(arrayOfCh[z][0]=='/') {
+        trafiony = 1;
+      } else {
+        trafiony = 0;
+      }
+      
+      
+      var lines = fragmentText(ctx,arrayOfLines[z], cell_w * 0.9); // 10% padding
+      lines.forEach(function(line, i) {
+            ctx.fillText(line,   cell_w*(x)+cell_l,    cell_h*(y)+cell_t+bingo_m  +  ((i) * font_size)-10   ); // assume font height.
+      });
+      
+      
+      if (trafiony==1) {
+        ctx.strokeStyle="#FF0000";
+        ctx.beginPath();
+        ctx.moveTo(    x*(cell_w),     y*(cell_h) +bingo_m);
+        ctx.lineTo((x+1)*(cell_w), (y+1)*(cell_h) +bingo_m);  
+        ctx.stroke();
+      }
+      
+      z=z+1;
+    } 
+  }
+
+
+} //generuj_bingo
+
+function set_orgon() {
+  var inp = document.getElementById("input_data");
+  inp.readOnly = true;
+  inp.style.backgroundColor='#ddd';
+   
+inp.value =
+"Dzwoni stały zjeb"         +"\n"+
+"Telefon od anona"          +"\n"+
+"Alex Jones"                +"\n"+
+"Polityczka"                +"\n"+
+"Zamach na JFK"             +"\n"+
+"UFO"                       +"\n"+
+"Klod jest zmęczony"        +"\n"+
+"Gruba Bilderberg"          +"\n"+
+"Globaliści"                +"\n"+
+"Bill Hicks"                +"\n"+
+"Seryjny samobójca"         +"\n"+
+"Pedofilia"                 +"\n"+
+"Nadają orgonity"           +"\n"+
+"Klod pierdoli głupoty"     +"\n"+
+"Szczepionki"               +"\n"+
+"Witamina D3"               +"\n"+
+"Klodowi plącze się język"  +"\n"+
+"Problemy techniczne"       +"\n"+
+"Dzwoni Stały Słuchacz"     +"\n"+
+"Rząd Światowy"             +"\n"+
+"Nikola Tesla"              +"\n"+
+"PACH!"                     +"\n"+
+"Falseflag"                 +"\n"+
+"Przerwa muzyczna"          +"\n"+
+"Umówmy się"                ;
+}
+
+function set_wlasne() {
+  var inp = document.getElementById("input_data");
+  inp.readOnly = false;
+  inp.value = "";
+  inp.style.backgroundColor='#fff';
+}
+
+
+
+</script>
+
+
+
+</head>
+<body>
+
+<h1>Bingo generator</h1>
+<input type="text" name="naglowek" style="width:40%;" value="ORGONITY BINGO" id="naglowek"><br>
+
+<button  type="button" class="button waski" onClick='set_orgon();'  >Tekty orgonickie</button>
+<button  type="button" class="button waski" onClick='set_wlasne();' >Tekty Wlasne</button>
+<br>
+<textarea id="input_checked"  style="width:10px; height:450px;">
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+/
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-</textarea> 
+
+<textarea id="input_data"  style="width:40%; height:450px;">
+</textarea> 
+
+<br><br>
+<button type="button" class="button" onclick="generuj_bingo();">Generuj</button> <br><br>
+
+
+<canvas id="bingoCanvas" width="1500" height="1300" style="border:1px solid #d3d3d3;">Twoja przeglądarka nie umie into HTML5 canvas tag.</canvas>
+
+
+
+
+
+
+</body>
+</html>
