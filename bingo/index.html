@@ -34,19 +34,22 @@
 
 <script type="text/javascript">
 
-String.prototype.shuffle = function () {
+String.prototype.shuffle = function (freeSpaceTxt) {
     var a = this.split("\n"),
         n = a.length;
     var d = new Date(),
         seed = 0+d.getFullYear()+d.getMonth()+d.getDate();
 
     for(var i = n - 1; i > 0; i--) {
-        //var j = Math.floor(Math.random() * (i + 1));
+      //var j = Math.floor(Math.random() * (i + 1));
         var j = Math.floor(Math.abs(Math.sin(seed+i)) * (i + 1));
         var tmp = a[i];
         a[i] = a[j];
         a[j] = tmp;
     }
+    a.push(a[12]);
+    a[12] = freeSpaceTxt;
+
     return a.join("\n");
 }
 
@@ -88,8 +91,9 @@ function generuj_bingo() {
   var c = document.getElementById("bingoCanvas");
   var ctx = c.getContext("2d");
   ctx.clearRect(0, 0, c.width, c.height); //czysc (transparent)
-  ctx.rect(-10,-10,c.width+20,c.height+20); //czysc (bialy prostokat)
-  ctx.stroke(); 
+  ctx.fillStyle="white";
+  ctx.fillRect(-10,-10,c.width+20,c.height+20); //czysc (bialy prostokat)
+  ctx.stroke();
 
   
   var bingo_w = 1500;
@@ -124,6 +128,7 @@ function generuj_bingo() {
   ctx.font="120px Arial";
   ctx.textAlign="center";
   ctx.textBaseline="middle";
+  ctx.fillStyle="black";
   ctx.fillText(document.getElementById("naglowek").value ,bingo_w/2,bingo_m/2,bingo_w);
 
   //czasoznaczek
@@ -137,21 +142,21 @@ function generuj_bingo() {
   //ctx.restore();
 
 
-
-
   
   //teksty w kratkach
   var textAreaIn = document.getElementById("input_data");
   var teksty = textAreaIn.value;
-  teksty = teksty.shuffle();
+  teksty = teksty.shuffle(document.getElementById("freespace").value);
   var arrayOfLines = teksty.split("\n");
 
 
   //trafiony czy nie
   var textAreaCh = document.getElementById("input_checked");
   var textyCh = textAreaCh.value;
-  textyCh = textyCh.shuffle();
+  textyCh = textyCh.shuffle(document.getElementById("freespace").value);
   var arrayOfCh = textyCh.split("\n");
+
+
   
   
   var cell_w= bingo_w/5;
@@ -175,13 +180,13 @@ function generuj_bingo() {
         trafiony = 0;
       }
       
-      
+      //rysowanie tekstów
       var lines = fragmentText(ctx,arrayOfLines[z], cell_w * 0.9); // 10% padding
       lines.forEach(function(line, i) {
             ctx.fillText(line,   cell_w*(x)+cell_l,    cell_h*(y)+cell_t+bingo_m  +  ((i) * font_size)-10   ); // assume font height.
       });
       
-      
+      //rysowanie skreśleń
       if (trafiony==1) {
         ctx.strokeStyle="#FF0000";
         ctx.beginPath();
@@ -215,7 +220,6 @@ inp.value =
 "Bill Hicks"                +"\n"+
 "Seryjny samobójca"         +"\n"+
 "Pedofilia"                 +"\n"+
-"Nadają orgonity"           +"\n"+
 "Klod pierdoli głupoty"     +"\n"+
 "Szczepionki"               +"\n"+
 "Witamina D3"               +"\n"+
@@ -247,7 +251,10 @@ function set_wlasne() {
 <body>
 <a href="https://github.com/karachan/karachan.github.io/tree/master/bingo"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>
 <h1>Bingo generator</h1>
-<input type="text" name="naglowek" style="width:40%;" value="ORGONITY BINGO" id="naglowek"><br>
+Nagłówek:<br>
+<input type="text" name="naglowek"  style="width:40%;" value="ORGONITY BINGO" id="naglowek"><br><br>
+Free space:<br>
+<input type="text" name="freespace" style="width:40%;" value="Nadają orgonity" id="freespace"><br><br>
 
 <button  type="button" class="button waski" onClick='set_orgon();'  >Teksty orgonickie</button>
 <button  type="button" class="button waski" onClick='set_wlasne();' >Teksty własne</button>
