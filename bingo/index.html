@@ -153,7 +153,7 @@ function generuj_bingo() {
   //trafiony czy nie
   var textAreaCh = document.getElementById("input_checked");
   var textyCh = textAreaCh.value;
-  textyCh = textyCh.shuffle(document.getElementById("freespace").value);
+  textyCh = textyCh.shuffle("*");
   var arrayOfCh = textyCh.split("\n");
 
 
@@ -193,6 +193,21 @@ function generuj_bingo() {
         ctx.moveTo(    x*(cell_w),     y*(cell_h) +bingo_m);
         ctx.lineTo((x+1)*(cell_w), (y+1)*(cell_h) +bingo_m);  
         ctx.stroke();
+      }
+
+      //podwojnie skreslony
+      if (z==12) {
+        ctx.strokeStyle="#FF0000";
+        ctx.beginPath();
+        ctx.moveTo(    x*(cell_w),     y*(cell_h) +bingo_m);
+        ctx.lineTo((x+1)*(cell_w), (y+1)*(cell_h) +bingo_m);  
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo((x+1)*(cell_w), y*(cell_h) +bingo_m);
+        ctx.lineTo(x*(cell_w), (y+1)*(cell_h) +bingo_m);  
+        ctx.stroke();
+
       }
       
       z=z+1;
@@ -272,7 +287,7 @@ Free space:<br>
 -
 -
 -
-/
+-
 -
 -
 -
@@ -289,7 +304,8 @@ Free space:<br>
 -</textarea> 
 
 <textarea id="input_data"  style="width:40%; height:450px;">
-</textarea> 
+</textarea> <br>
+(zeby skreślić zamień "-" na "/")
 
 <br><br>
 <button type="button" class="button" onclick="generuj_bingo();generuj_bingo();">Generuj</button> <br><br>
